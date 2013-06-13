@@ -265,15 +265,19 @@ def plot_meteogram(address):
     # synchronize x plot range in cloud plot and temp plot
     cloud_ax.set_xlim(*temp_ax.get_xlim())
 
+    # make vertical room for precipitation plot
+    temp_ax.set_ylim(bottom=temp_ax.get_ylim()[0]-5)
+
     # plot precipitation inside temp plot
     precip_ax = temp_ax.twinx()
-    plot_precipitation(precip_ax, weather_data, '#add8e6')
+    plot_precipitation(precip_ax, weather_data, 'cornflowerblue')
 
     # plot only in the buttom third
     precip_ax.set_ylim(top=precip_ax.get_ylim()[1]*3)
+    precip_ax.set_yticks(precip_ax.get_yticks()[:len(precip_ax.get_yticks())/2])
     # make all right y labels blue
     for label in precip_ax.get_yticklabels():
-        label.set_color('#add8e6')
+        label.set_color('cornflowerblue')
 
     return(fig)
 
