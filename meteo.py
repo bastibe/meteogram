@@ -195,6 +195,23 @@ def plot_clouds(ax, weather_data):
     ax.set_yticks([0, 1, 2, 3])
     ax.set_yticklabels(['fog', 'low', 'med', 'high'])
 
+def interpolate_points(x, y, max_dist):
+    """
+    Create new points between points so that no point is farther than max_dist
+    from the next point. For every iteration, distances are halved.
+    """
+    x, y = list(x), list(y)
+    n = 1
+    while n < len(x):
+        dx = x[n]-x[n-1]
+        dy = y[n]-y[n-1]
+        if dx*dx+dy*dy > max_dist*max_dist:
+            x[n:n] = [x[n-1]+dx/2]
+            y[n:n] = [y[n-1]+dy/2]
+        else:
+            n += 1
+    return x, y
+
 def plot_temperature(ax, weather_data, color):
     """
     plot a single plot containing a temperature curve and a
@@ -202,7 +219,11 @@ def plot_temperature(ax, weather_data, color):
     """
     temperature = [extract_value(e,'temperature') for e in weather_data if 'temperature' in e]
     time, temperature = zip(*temperature)
-    mpl.plot_date(time, temperature, label='temperature', linestyle='-', axes=ax, color=color)
+    time, temperature = interpolate_points(time, temperature, 1)
+    for n in range(len(time)-1):
+        ax.plot_date(time[n:n+2], temperature[n:n+2], linestyle='-',
+                     linewidth=4, marker=None,
+                     color=color(temperature[n]))
     ax.set_xticklabels([format_date(d) for d in ax.get_xticks()], rotation=45)
 
 def plot_precipitation(ax, weather_data, color):
@@ -230,12 +251,14 @@ def plot_meteogram(address):
 
     # plot temperature
     temp_ax = mpl.subplot2grid((6, 1), (1, 0), rowspan=5)
-    plot_temperature(temp_ax, weather_data, 'b')
+    colormap = mpl.get_cmap('coolwarm')
+    color = lambda t: colormap(t/35)
+    plot_temperature(temp_ax, weather_data, color)
     # skip top y tick (because of fog)
     temp_ax.set_yticks(np.array(temp_ax.get_yticks())[:-1])
-    # make all left y labels blue
-    for label in temp_ax.get_yticklabels():
-        label.set_color('b')
+    # color all labels according to temperature
+    for tick, label in zip(temp_ax.get_yticks(), temp_ax.get_yticklabels()):
+        label.set_color(color(tick))
 
     # synchronize x plot range in cloud plot and temp plot
     cloud_ax.set_xlim(*temp_ax.get_xlim())
