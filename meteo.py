@@ -243,11 +243,13 @@ def plot_meteogram(address):
     latLng = retrieve_position_openmapquest(address)
     weather_data = retrieve_weather_yrno(latLng)
 
-    fig = mpl.figure()
+    fig = mpl.figure(facecolor='white')
     # plot clouds
     mpl.subplots_adjust(bottom=0.2, hspace=0)
     cloud_ax = mpl.subplot2grid((6, 1), (0, 0))
     plot_clouds(cloud_ax, weather_data)
+    # hide x ticks
+    cloud_ax.set_xticks([])
 
     # plot temperature
     temp_ax = mpl.subplot2grid((6, 1), (1, 0), rowspan=5)
