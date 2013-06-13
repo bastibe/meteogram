@@ -5,5 +5,5 @@ meteo.py grabs a GPS location for a place from the web, then grabs the current w
 
 The resulting image looks like this:
 
-![meteogram](https://dl.dropbox.com/u/98854/images/meteogram.png)  
-(Temperature in dark blue, precipitation in light blue, cloud cover at different altitudes in grey)
+![meteogram](https://raw.github.com/bastibe/meteogram/master/screenshot.png)  
+(Temperature in blue/red line, precipitation in blue bars, cloud cover at different altitudes in grey)
